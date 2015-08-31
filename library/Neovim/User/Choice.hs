@@ -32,7 +32,7 @@ oneOf cs = fmap (\i -> cs !! (i-1)) <$> askForIndex (zipWith mkChoice cs [1..])
 askForIndex :: [Object] -> Neovim r st (Maybe Int)
 askForIndex cs = vim_call_function "inputlist" [ObjectArray cs] >>= \case
     Left e ->
-        (err . ErrorMessage . Left . show) e
+        (err . text . show) e
 
     Right a -> case fromObject a of
         Right i | i >= 1 && i <= length cs ->
@@ -42,7 +42,7 @@ askForIndex cs = vim_call_function "inputlist" [ObjectArray cs] >>= \case
             return Nothing
 
         Left e ->
-            (err . ErrorMessage . Right) e
+            err e
 
 
 -- | Same as 'oneOf' only that @a@ is constrained by 'Show' insted of 'Pretty'.
