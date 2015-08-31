@@ -19,6 +19,7 @@ source-repository head
 
 library
   exposed-modules:      Neovim.User.Choice
+                      , Neovim.User.Input
 
   -- other-extensions:
   build-depends:        base >=4.6 && < 5
@@ -26,6 +27,7 @@ library
                       , ansi-wl-pprint
                       , bytestring
                       , data-default
+                      , directory
                       , exceptions
                       , messagepack >= 0.4
                       , mtl >= 2.2.1 && < 2.3

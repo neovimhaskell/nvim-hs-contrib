@@ -15,6 +15,8 @@ module Neovim.User.Choice
 
 import           Neovim
 
+import           Data.Char                    (toLower)
+import           Data.List                    (isPrefixOf)
 import           Text.PrettyPrint.ANSI.Leijen as P hiding ((<$>))
 
 
@@ -50,3 +52,26 @@ oneOfS :: Show a => [a] -> Neovim r st (Maybe a)
 oneOfS cs = fmap (\i -> cs !! (i-1)) <$> askForIndex (zipWith mkChoice cs [1..])
   where
     mkChoice c i = toObject $ show (i :: Int) ++ ". " ++ show c
+
+
+-- | Open @inputdialog@s inside neovim until the user has successfully typed any
+-- prefix of @yes@ or @no@ or alternatively aborted the dialog. Defaults to
+-- @yes@ for the empty input.
+yesOrNo :: String -- ^ Question to the user
+        -> Neovim r st Bool
+yesOrNo message = do
+    spec <- vim_call_function
+                "inputdialog" $ (message ++ " (Y/n) ") +: "" +: "no" +: []
+    case fmap fromObject spec of
+        Right (Right s) | map toLower s `isPrefixOf` "yes" ->
+            return True
+
+        Right (Right s) | map toLower s `isPrefixOf` "no" ->
+            return False
+
+        Right (Left e) ->
+            err e
+
+        _ ->
+            yesOrNo message
+
