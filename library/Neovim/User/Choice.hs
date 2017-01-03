@@ -26,7 +26,7 @@ import           Text.PrettyPrint.ANSI.Leijen as P hiding ((<$>))
 oneOf :: Pretty a => [a] -> Neovim r st (Maybe a)
 oneOf cs = fmap (\i -> cs !! (i-1)) <$> askForIndex (zipWith mkChoice cs [1..])
   where
-    mkChoice c i = toObject $ int i P.<> text "." <+> pretty c
+    mkChoice c i = docToObject $ int i P.<> text "." <+> pretty c
 
 
 -- | Ask user for a choice and 'Maybe' return the index of that choice

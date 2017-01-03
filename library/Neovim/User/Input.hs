@@ -23,7 +23,7 @@ import System.Directory
 input :: String -- ^ Message to display
       -> Maybe String -- ^ Input fiiled in
       -> Maybe String -- ^ Completion mode
-      -> Neovim r st (Either Object Object)
+      -> Neovim r st (Either NeovimException Object)
 input message mPrefilled mCompletion = vim_call_function "input" $
     (message <> " ")
     +: maybe "" id mPrefilled
