@@ -3,7 +3,7 @@ version:             0.2.1
 synopsis:            Haskell plugin backend for neovim
 description:
   Library for nvim-hs.
-homepage:            https://github.com/neovimhaskell/nvim-hs
+homepage:            https://github.com/neovimhaskell/nvim-hs-contrib
 license:             Apache-2.0
 license-file:        LICENSE
 author:              Sebastian Witte
@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 extra-source-files:  CHANGELOG.md
 source-repository head
     type:            git
-    location:        https://github.com/neovimhaskell/nvim-hs
+    location:        https://github.com/neovimhaskell/nvim-hs-contrib
 
 library
   exposed-modules:      Neovim.BuildTool
