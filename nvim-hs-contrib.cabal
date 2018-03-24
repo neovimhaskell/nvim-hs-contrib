@@ -1,5 +1,5 @@
 name:                nvim-hs-contrib
-version:             0.2.1
+version:             1.0.0.0
 synopsis:            Haskell plugin backend for neovim
 description:
   Library for nvim-hs.
@@ -24,14 +24,14 @@ library
 
   -- other-extensions:
   build-depends:        base >=4.6 && < 5
-                      , nvim-hs >= 0.2.0
-                      , ansi-wl-pprint
+                      , nvim-hs >= 1.0
+                      , prettyprinter
+                      , prettyprinter-ansi-terminal
                       , bytestring
                       , data-default
                       , directory
-                      , exceptions
                       , filepath
-                      , messagepack >= 0.4
+                      , messagepack
                       , mtl >= 2.2.1 && < 2.3
                       , text
                       , time

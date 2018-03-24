@@ -23,7 +23,7 @@ import System.Directory
 input :: String -- ^ Message to display
       -> Maybe String -- ^ Input fiiled in
       -> Maybe String -- ^ Completion mode
-      -> Neovim r st (Either NeovimException Object)
+      -> Neovim env (Either NeovimException Object)
 input message mPrefilled mCompletion = vim_call_function "input" $
     (message <> " ")
     +: maybe "" id mPrefilled
@@ -35,7 +35,7 @@ input message mPrefilled mCompletion = vim_call_function "input" $
 -- If the directory does not exist, ask the usere whether it should be created.
 askForDirectory :: String -- ^ Message to put in front
                 -> Maybe FilePath -- ^ Prefilled text
-                -> Neovim r st FilePath
+                -> Neovim env FilePath
 askForDirectory message mPrefilled = do
     fp <- errOnInvalidResult $ input message mPrefilled (Just "dir")
 
@@ -51,6 +51,6 @@ askForDirectory message mPrefilled = do
 
 askForString :: String -- ^ message to put in front
              -> Maybe String -- ^ Prefilled text
-             -> Neovim r st String
+             -> Neovim env String
 askForString message mPrefilled =
     errOnInvalidResult $ input message mPrefilled Nothing

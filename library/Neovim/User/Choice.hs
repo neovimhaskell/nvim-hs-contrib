@@ -1,4 +1,5 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE LambdaCase        #-}
+{-# LANGUAGE OverloadedStrings #-}
 {- |
 Module      :  Neovim.User.Choice
 Description :  Ask the user for an answer
@@ -15,26 +16,26 @@ module Neovim.User.Choice
 
 import           Neovim
 
-import           Data.Char                    (toLower)
-import           Data.List                    (isPrefixOf)
-import           Text.PrettyPrint.ANSI.Leijen as P hiding ((<$>))
+import           Data.Char (toLower)
+import           Data.List (isPrefixOf)
 
 
 -- | Call @inputlist()@ on the neovim side and ask the user for a choice. This
 -- function returns 'Nothing' if the user input was invalid or 'Just' the chosen
 -- element. The elements are rendered via 'Pretty'.
-oneOf :: Pretty a => [a] -> Neovim r st (Maybe a)
+oneOf :: [String] -> Neovim env (Maybe String)
 oneOf cs = fmap (\i -> cs !! (i-1)) <$> askForIndex (zipWith mkChoice cs [1..])
   where
-    mkChoice c i = docToObject $ int i P.<> text "." <+> pretty c
+    mkChoice :: String -> Int -> Object
+    mkChoice c i = toObject $ show i <> ". " <> c
 
 
 -- | Ask user for a choice and 'Maybe' return the index of that choice
 -- (1-based).
-askForIndex :: [Object] -> Neovim r st (Maybe Int)
+askForIndex :: [Object] -> Neovim env (Maybe Int)
 askForIndex cs = vim_call_function "inputlist" [ObjectArray cs] >>= \case
     Left e ->
-        (err . text . show) e
+        err $ exceptionToDoc e
 
     Right a -> case fromObject a of
         Right i | i >= 1 && i <= length cs ->
@@ -48,7 +49,7 @@ askForIndex cs = vim_call_function "inputlist" [ObjectArray cs] >>= \case
 
 
 -- | Same as 'oneOf' only that @a@ is constrained by 'Show' insted of 'Pretty'.
-oneOfS :: Show a => [a] -> Neovim r st (Maybe a)
+oneOfS :: Show a => [a] -> Neovim env (Maybe a)
 oneOfS cs = fmap (\i -> cs !! (i-1)) <$> askForIndex (zipWith mkChoice cs [1..])
   where
     mkChoice c i = toObject $ show (i :: Int) ++ ". " ++ show c
@@ -58,10 +59,11 @@ oneOfS cs = fmap (\i -> cs !! (i-1)) <$> askForIndex (zipWith mkChoice cs [1..])
 -- prefix of @yes@ or @no@ or alternatively aborted the dialog. Defaults to
 -- @yes@ for the empty input.
 yesOrNo :: String -- ^ Question to the user
-        -> Neovim r st Bool
+        -> Neovim env Bool
 yesOrNo message = do
     spec <- vim_call_function
-                "inputdialog" $ (message ++ " (Y/n) ") +: "" +: "no" +: []
+                "inputdialog" $ (message ++ " (Y/n) ")
+                    +: ("" :: String) +: ("no" :: String) +: []
     case fmap fromObject spec of
         Right (Right s) | map toLower s `isPrefixOf` "yes" ->
             return True
