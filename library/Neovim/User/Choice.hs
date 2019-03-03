@@ -15,6 +15,7 @@ module Neovim.User.Choice
     where
 
 import           Neovim
+import           Neovim.API.String
 
 import           Data.Char (toLower)
 import           Data.List (isPrefixOf)
@@ -34,10 +35,7 @@ oneOf cs = fmap (\i -> cs !! (i-1)) <$> askForIndex (zipWith mkChoice cs [1..])
 -- (1-based).
 askForIndex :: [Object] -> Neovim env (Maybe Int)
 askForIndex cs = vim_call_function "inputlist" [ObjectArray cs] >>= \case
-    Left e ->
-        err $ exceptionToDoc e
-
-    Right a -> case fromObject a of
+    a -> case fromObject a of
         Right i | i >= 1 && i <= length cs ->
             return $ Just i
 
@@ -64,14 +62,14 @@ yesOrNo message = do
     spec <- vim_call_function
                 "inputdialog" $ (message ++ " (Y/n) ")
                     +: ("" :: String) +: ("no" :: String) +: []
-    case fmap fromObject spec of
-        Right (Right s) | map toLower s `isPrefixOf` "yes" ->
+    case fromObject spec of
+        Right s | map toLower s `isPrefixOf` "yes" ->
             return True
 
-        Right (Right s) | map toLower s `isPrefixOf` "no" ->
+        Right s | map toLower s `isPrefixOf` "no" ->
             return False
 
-        Right (Left e) ->
+        Left e ->
             err e
 
         _ ->

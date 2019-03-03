@@ -14,18 +14,20 @@ module Neovim.User.Input
     where
 
 import Neovim
+import Neovim.API.String
 import Neovim.User.Choice
 
 import System.Directory
 
 
 -- | Helper function that calls the @input()@ function of neovim.
-input :: String -- ^ Message to display
+input :: NvimObject result
+      => String -- ^ Message to display
       -> Maybe String -- ^ Input fiiled in
       -> Maybe String -- ^ Completion mode
-      -> Neovim env (Either NeovimException Object)
-input message mPrefilled mCompletion = vim_call_function "input" $
-    (message <> " ")
+      -> Neovim env result
+input message mPrefilled mCompletion = fmap fromObjectUnsafe
+  . vim_call_function "input" $ (message <> " ")
     +: maybe "" id mPrefilled
     +: maybe [] (+: []) mCompletion
 
@@ -37,10 +39,9 @@ askForDirectory :: String -- ^ Message to put in front
                 -> Maybe FilePath -- ^ Prefilled text
                 -> Neovim env FilePath
 askForDirectory message mPrefilled = do
-    fp <- errOnInvalidResult $ input message mPrefilled (Just "dir")
+    fp <- input message mPrefilled (Just "dir")
 
-    efp <- errOnInvalidResult $
-            vim_call_function "expand" $ (fp :: FilePath) +: []
+    efp <- fmap fromObjectUnsafe . vim_call_function "expand" $ (fp :: FilePath) +: []
 
     whenM (not <$> liftIO (doesDirectoryExist efp)) $
         whenM (yesOrNo (efp ++ " does not exist, create it?")) $
@@ -52,5 +53,4 @@ askForDirectory message mPrefilled = do
 askForString :: String -- ^ message to put in front
              -> Maybe String -- ^ Prefilled text
              -> Neovim env String
-askForString message mPrefilled =
-    errOnInvalidResult $ input message mPrefilled Nothing
+askForString message mPrefilled = input message mPrefilled Nothing
