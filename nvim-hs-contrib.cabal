@@ -24,7 +24,7 @@ library
 
   -- other-extensions:
   build-depends:        base >=4.6 && < 5
-                      , nvim-hs >= 1.0 && <3
+                      , nvim-hs >= 2.0 && <3
                       , prettyprinter
                       , prettyprinter-ansi-terminal
                       , bytestring
