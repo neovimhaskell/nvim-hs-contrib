@@ -21,6 +21,7 @@ library
   exposed-modules:      Neovim.BuildTool
                       , Neovim.User.Choice
                       , Neovim.User.Input
+                      , Neovim.User.Output
 
   -- other-extensions:
   build-depends:        base >=4.6 && < 5
