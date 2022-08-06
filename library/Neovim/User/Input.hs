@@ -27,7 +27,7 @@ input :: NvimObject result
       -> Maybe String -- ^ Completion mode
       -> Neovim env result
 input message mPrefilled mCompletion = fmap fromObjectUnsafe
-  . vim_call_function "input" $ (message <> " ")
+  $ vim_call_function "input" $ (message <> " ")
     +: maybe "" id mPrefilled
     +: maybe [] (+: []) mCompletion
 
@@ -41,7 +41,7 @@ askForDirectory :: String -- ^ Message to put in front
 askForDirectory message mPrefilled = do
     fp <- input message mPrefilled (Just "dir")
 
-    efp <- fmap fromObjectUnsafe . vim_call_function "expand" $ (fp :: FilePath) +: []
+    efp <- fmap fromObjectUnsafe $ vim_call_function "expand" $ (fp :: FilePath) +: []
 
     whenM (not <$> liftIO (doesDirectoryExist efp)) $
         whenM (yesOrNo (efp ++ " does not exist, create it?")) $
