@@ -1,8 +1,1 @@
-flags: {}
-packages:
-- '.'
-resolver: lts-19.18
-
-extra-deps: []
-
-
+stack-ghc-9.4.yaml
