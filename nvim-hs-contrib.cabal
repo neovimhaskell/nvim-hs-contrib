@@ -32,7 +32,7 @@ library
                       , directory
                       , filepath
                       , messagepack
-                      , mtl >= 2.2.1 && < 2.3
+                      , mtl >= 2.2.1 && < 2.4
                       , text
                       , time
                       , utf8-string
